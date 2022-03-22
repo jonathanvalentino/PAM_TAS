@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".MainActivity">
+
+    <!-- Top Section -->
+    <LinearLayout
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/_20sdp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:contentDescription="@string/app_name"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:scaleX="-1"
+            android:src="@drawable/ic_top_menu"
+            app:tint="@color/colorIcon" />
+
+        <TextView
+            android:id="@+id/textContinent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:fontFamily="@font/ubuntu_bold"
+            android:text="SOUTHEAST ASIA"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:src="@drawable/joni"
+            app:civ_border_color="@color/colorAccent"
+            app:civ_border_width="2dp" />
+
+    </LinearLayout>
+
+    <!-- Country Section -->
+    <LinearLayout
+        android:id="@+id/countrySelectLayout"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:orientation="horizontal"
+        android:padding="@dimen/_20sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topAppBar">
+
+    </LinearLayout>
+
+
+    <!-- ViewPager Section -->
+
+
+    <!-- Bottom Navigation Bar -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/locationsViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingTop="@dimen/_20sdp"
+        android:paddingStart="@dimen/_30sdp"
+        android:paddingEnd="@dimen/_30sdp"
+        android:paddingBottom="@dimen/_20sdp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/countrySelectLayout"
+        app:layout_constraintVertical_bias="0.0">
+
+    </androidx.viewpager2.widget.ViewPager2>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
+        app:itemTextColor="@drawable/bottom_nav_icon_color_selector"
+        app:labelVisibilityMode="unlabeled"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
