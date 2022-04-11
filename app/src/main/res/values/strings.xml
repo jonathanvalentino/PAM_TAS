@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Vacation</string>
+    <string name="app_name">Gift Pack</string>
     <string name="home">Home</string>
     <string name="bookmark">Bookmark</string>
-    <string name="calendar">Calendar</string>
-    <string name="trip">Trip</string>
+    <string name="cart">Cart</string>
+    <string name="profile">Profile</string>
 </resources>

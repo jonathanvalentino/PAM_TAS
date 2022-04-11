@@ -31,12 +31,12 @@ public class BookmarkActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         overridePendingTransition(0,0);
                         return true;
-                    case R.id.calendar_menu:
-                        startActivity(new Intent(getApplicationContext(), CalendarActivity.class));
+                    case R.id.cart_menu:
+                        startActivity(new Intent(getApplicationContext(), CartActivity.class));
                         overridePendingTransition(0,0);
                         return true;
-                    case R.id.trip_menu:
-                        startActivity(new Intent(getApplicationContext(), TripActivity.class));
+                    case R.id.profile_menu:
+                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                         overridePendingTransition(0,0);
                         return true;
                 }

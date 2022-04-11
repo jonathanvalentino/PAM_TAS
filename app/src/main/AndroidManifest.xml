@@ -12,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
         <activity
-            android:name=".TripActivity"
+            android:name=".ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".CalendarActivity"
+            android:name=".CartActivity"
             android:exported="false" />
         <activity
             android:name=".BookmarkActivity"

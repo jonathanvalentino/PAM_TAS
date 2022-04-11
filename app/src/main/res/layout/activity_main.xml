@@ -32,7 +32,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_weight="1"
             android:fontFamily="@font/ubuntu_bold"
-            android:text="SOUTHEAST ASIA"
+            android:text="HELLO JONATHAN"
             android:textAlignment="center"
             android:textColor="@color/colorAccent" />
 
@@ -46,9 +46,9 @@
 
     </LinearLayout>
 
-    <!-- Country Section -->
+    <!-- Gift Category -->
     <LinearLayout
-        android:id="@+id/countrySelectLayout"
+        android:id="@+id/giftCategory"
         android:layout_width="match_parent"
         android:layout_height="110dp"
         android:orientation="horizontal"
@@ -63,23 +63,7 @@
     <!-- ViewPager Section -->
 
 
-    <!-- Bottom Navigation Bar -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/locationsViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingTop="@dimen/_20sdp"
-        android:paddingStart="@dimen/_30sdp"
-        android:paddingEnd="@dimen/_30sdp"
-        android:paddingBottom="@dimen/_20sdp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/countrySelectLayout"
-        app:layout_constraintVertical_bias="0.0">
 
-    </androidx.viewpager2.widget.ViewPager2>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavBar"

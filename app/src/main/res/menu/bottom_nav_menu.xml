@@ -3,7 +3,7 @@
     <item
         android:id="@+id/home_menu"
         android:title="@string/home"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/ic_gift"
         android:enabled="true"/>
 
     <item
@@ -12,12 +12,12 @@
         android:icon="@drawable/ic_bookmark"/>
 
     <item
-        android:id="@+id/calendar_menu"
-        android:title="@string/calendar"
-        android:icon="@drawable/ic_calendar"/>
+        android:id="@+id/cart_menu"
+        android:title="@string/cart"
+        android:icon="@drawable/ic_cart"/>
     <item
-        android:id="@+id/trip_menu"
-        android:title="@string/trip"
-        android:icon="@drawable/ic_trip"/>
+        android:id="@+id/profile_menu"
+        android:title="@string/profile"
+        android:icon="@drawable/ic_profile"/>
 
 </menu>
