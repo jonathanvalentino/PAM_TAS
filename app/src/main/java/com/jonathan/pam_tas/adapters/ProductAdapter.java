@@ -1,6 +1,8 @@
 package com.jonathan.pam_tas.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.jonathan.pam_tas.ProductDetail;
 import com.jonathan.pam_tas.R;
 import com.jonathan.pam_tas.models.ProductModel;
 
@@ -34,12 +37,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Glide.with(context).load(productModelList.get(position).getImg_url()).into(holder.productImage);
         holder.name.setText(productModelList.get(position).getName());
         holder.description.setText(productModelList.get(position).getDescription());
-        holder.love.setText(productModelList.get(position).getLove()+" love this");
+        holder.love.setText(productModelList.get(position).getLove().toString()+" love this");
         holder.sold.setText(productModelList.get(position).getSold()+" sold");
+        holder.price.setText("Rp."+productModelList.get(position).getPrice());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    Intent intent = new Intent(context, ProductDetail.class);
+                    intent.putExtra("detail", productModelList.get(position));
+                    context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -49,7 +62,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
-        TextView name, description, love, sold;
+        TextView name, description, love, sold, price;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -58,6 +71,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             description = itemView.findViewById(R.id.productDesc);
             love = itemView.findViewById(R.id.productLove);
             sold = itemView.findViewById(R.id.productSold);
+            price = itemView.findViewById(R.id.productPrice);
         }
     }
 }

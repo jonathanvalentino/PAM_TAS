@@ -1,24 +1,28 @@
 package com.jonathan.pam_tas.models;
 
-public class ProductModel {
+import java.io.Serializable;
+
+public class ProductModel implements Serializable {
     String name;
     String description;
-    String love;
-    String sold;
+    Integer love;
+    Integer sold;
     String type;
     String img_url;
+    String price;
 
     public ProductModel(){
 
     }
 
-    public ProductModel(String name, String description, String love, String sold, String type, String img_url) {
+    public ProductModel(String name, String description, Integer love, Integer sold, String type, String img_url) {
         this.name = name;
         this.description = description;
         this.love = love;
         this.sold = sold;
         this.type = type;
         this.img_url = img_url;
+        this.price = price;
     }
 
     public String getName() {
@@ -37,19 +41,19 @@ public class ProductModel {
         this.description = description;
     }
 
-    public String getLove() {
+    public Integer getLove() {
         return love;
     }
 
-    public void setLove(String love) {
+    public void setLove(Integer love) {
         this.love = love;
     }
 
-    public String getSold() {
+    public Integer getSold() {
         return sold;
     }
 
-    public void setSold(String sold) {
+    public void setSold(Integer sold) {
         this.sold = sold;
     }
 
@@ -67,5 +71,13 @@ public class ProductModel {
 
     public void setImg_url(String img_url) {
         this.img_url = img_url;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 }
