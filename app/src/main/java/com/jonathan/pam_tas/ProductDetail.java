@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -133,6 +135,27 @@ public class ProductDetail extends AppCompatActivity {
             cartMap.put("currentDate", saveCurrentDate);
             cartMap.put("recipient", recipientName.getText().toString());
             cartMap.put("letter", personalLetter.getText().toString());
+            cartMap.put("img_url",productModel.getImg_url());
+
+            final HashMap<String, Object> price = new HashMap<>();
+            price.put("price",Integer.parseInt(productModel.getPrice()));
+
+
+
+            DocumentReference docRef = db.collection("AddToCart").document(auth.getCurrentUser().getUid()).collection("CartTotalPrice").document("Total");
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                          docRef.update("price",FieldValue.increment(Integer.parseInt(productModel.getPrice())));
+                        } else {
+                                docRef.set(price);
+                        }
+                    }
+                }
+            });
 
             db.collection("AddToCart").document(auth.getCurrentUser().getUid())
                     .collection("CurrentUser")
@@ -140,9 +163,13 @@ public class ProductDetail extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
-                            Toast.makeText(getApplicationContext(), "Added to Cart", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(), CartActivity.class)
+                                    .putExtra("added",true));
                         }
                     });
+
+
+
         }
 
     }
