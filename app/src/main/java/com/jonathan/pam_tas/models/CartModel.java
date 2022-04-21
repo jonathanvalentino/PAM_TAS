@@ -7,6 +7,7 @@ public class CartModel {
     String recipient;
     String letter;
     String img_url;
+    String documentId;
 
 
 
@@ -20,6 +21,14 @@ public class CartModel {
         this.recipient = recipient;
         this.letter = letter;
         this.img_url = img_url;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
     public String getProductName() {

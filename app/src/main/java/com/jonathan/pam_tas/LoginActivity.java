@@ -18,6 +18,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class LoginActivity extends AppCompatActivity {
 
     TextInputEditText etLoginEmail;
@@ -33,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         etLoginEmail = findViewById(R.id.etLoginEmail);
         etLoginPassword = findViewById(R.id.etLoginPass);
         tvRegisterHere = findViewById(R.id.tvRegisterHere);
@@ -71,10 +75,12 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()){
-                        Toast.makeText(LoginActivity.this, "User logged in successfully", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     }else{
-                        Toast.makeText(LoginActivity.this, "Log in Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE)
+                                .setTitleText("Log in Error")
+                                .setContentText(task.getException().getMessage())
+                                .show();
                     }
                 }
             });

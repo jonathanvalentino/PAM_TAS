@@ -21,8 +21,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -33,8 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private ImageView btnBack;
 
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
+    private FirebaseFirestore db;
     FirebaseAuth mAuth;
 
     @Override
@@ -42,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         etRegEmail = findViewById(R.id.etRegEmail);
         etRegPassword = findViewById(R.id.etRegPass);
         etRegName = findViewById(R.id.etRegName);
@@ -50,8 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         mAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+        db = FirebaseFirestore.getInstance();
 
         btnRegister.setOnClickListener(view ->{
             createUser();
@@ -72,25 +76,39 @@ public class RegisterActivity extends AppCompatActivity {
     private void createUser(){
         String email = etRegEmail.getText().toString();
         String password = etRegPassword.getText().toString();
+        String name = etRegName.getText().toString();
 
-        if (TextUtils.isEmpty(email)){
+        if(TextUtils.isEmpty(name)){
+            etRegEmail.setError("Email cannot be empty");
+            etRegEmail.requestFocus();
+        }
+        else if (TextUtils.isEmpty(email)){
             etRegEmail.setError("Email cannot be empty");
             etRegEmail.requestFocus();
         }else if (TextUtils.isEmpty(password)){
             etRegPassword.setError("Password cannot be empty");
             etRegPassword.requestFocus();
         }else{
+            final HashMap<String, Object> userData = new HashMap<>();
+            userData.put("name", name);
+            userData.put("email", email);
+
             mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()){
-                        Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        db.collection("UserData").document(mAuth.getCurrentUser().getUid())
+                                .set(userData);
+                        startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
                     }else{
-                        Toast.makeText(RegisterActivity.this, "Registration Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        new SweetAlertDialog(RegisterActivity.this, SweetAlertDialog.ERROR_TYPE)
+                                .setTitleText("Register Error")
+                                .setContentText(task.getException().getMessage())
+                                .show();
                     }
                 }
             });
+
         }
     }
 
