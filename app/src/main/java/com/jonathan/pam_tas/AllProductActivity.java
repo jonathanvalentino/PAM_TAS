@@ -3,19 +3,13 @@ package com.jonathan.pam_tas;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,75 +18,68 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.jonathan.pam_tas.adapters.AllProductAdapter;
 import com.jonathan.pam_tas.adapters.BookmarkAdapter;
-import com.jonathan.pam_tas.adapters.ProductAdapter;
+import com.jonathan.pam_tas.models.AllProductModel;
 import com.jonathan.pam_tas.models.BookmarkModel;
-import com.jonathan.pam_tas.models.CartModel;
 import com.jonathan.pam_tas.models.ProductModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookmarkActivity extends AppCompatActivity {
+public class AllProductActivity extends AppCompatActivity {
 
     StorageReference storageReference;
     FirebaseAuth auth;
     FirebaseFirestore db;
     ImageView profileImage;
-    List<BookmarkModel> bookmarkModelList;
-    BookmarkAdapter bookmarkAdapter;
-    RecyclerView bookmarkRecycler;
+    List<AllProductModel> allProductModelList;
+    AllProductAdapter allProductAdapter;
+    RecyclerView productRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bookmark);
+        setContentView(R.layout.activity_all_product);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         profileImage = findViewById(R.id.profileImage);
-        bookmarkRecycler = findViewById(R.id.recyclerView);
+        productRecycler = findViewById(R.id.recyclerView);
 
-        bookmarkRecycler.setLayoutManager(new GridLayoutManager(this,2));
-        bookmarkModelList = new ArrayList<>();
-        bookmarkAdapter = new BookmarkAdapter(BookmarkActivity.this,bookmarkModelList);
-        bookmarkRecycler.setAdapter(bookmarkAdapter);
+        productRecycler.setLayoutManager(new GridLayoutManager(this,2));
+        allProductModelList = new ArrayList<>();
+        allProductAdapter = new AllProductAdapter(AllProductActivity.this,allProductModelList);
+        productRecycler.setAdapter(allProductAdapter);
 
         setTopBar();
 
 
-        FirebaseUser user = auth.getCurrentUser();
-        if (user == null){
-            startActivity(new Intent(this, LoginActivity.class));
-        }
-        else {
-            db.collection("UserData").document(auth.getCurrentUser().getUid())
-                    .collection("Liked Product")
-                    .whereEqualTo("loved", "yes")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    BookmarkModel bookmarkModel = document.toObject(BookmarkModel.class);
-                                    bookmarkModelList.add(bookmarkModel);
-                                }
-                                bookmarkAdapter.notifyDataSetChanged();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Error" + task.getException(), Toast.LENGTH_SHORT).show();
+
+        db.collection("Product")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                AllProductModel allProductModel = document.toObject(AllProductModel.class);
+                                allProductModelList.add(allProductModel);
                             }
+                            allProductAdapter.notifyDataSetChanged();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
                         }
-                    });
-        }
+                    }
+                });
+
 
 
 
@@ -100,13 +87,15 @@ public class BookmarkActivity extends AppCompatActivity {
         // Bottom navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
 
-        bottomNavigationView.setSelectedItemId(R.id.bookmark_menu);
+        bottomNavigationView.setSelectedItemId(R.id.home_menu);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.bookmark_menu:
+                        startActivity(new Intent(getApplicationContext(), BookmarkActivity.class));
+                        overridePendingTransition(0,0);
                         return true;
                     case R.id.home_menu:
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));

@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
         <activity
+            android:name=".AllProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrderedActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProductDetail"
             android:exported="false" />
         <activity

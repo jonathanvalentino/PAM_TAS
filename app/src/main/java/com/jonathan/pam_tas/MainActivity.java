@@ -2,6 +2,7 @@ package com.jonathan.pam_tas;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,10 +10,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -31,7 +35,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.jonathan.pam_tas.adapters.AllProductAdapter;
 import com.jonathan.pam_tas.adapters.ProductAdapter;
+import com.jonathan.pam_tas.models.AllProductModel;
 import com.jonathan.pam_tas.models.ProductModel;
 import com.squareup.picasso.Picasso;
 
@@ -49,8 +55,14 @@ public class MainActivity extends AppCompatActivity{
     ProductAdapter productAdapter;
     FirebaseFirestore db;
     StorageReference storageReference;
+    EditText inputSearch;
+
+    private List<AllProductModel> allProductModelList;
+    private RecyclerView searchRecycler;
+    private AllProductAdapter allProductAdapter;
+
     ImageView icFilter,profileImage;
-    TextView giftCategoryBirthday, giftCategoryGraduation, giftCategoryAnniversary, giftCategoryWedding, txtHeader, textContinent;
+    TextView giftCategoryBirthday, giftCategoryGraduation, giftCategoryAnniversary, giftCategoryWedding, txtHeader, textContinent, txtSeeAll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +83,48 @@ public class MainActivity extends AppCompatActivity{
         txtHeader = findViewById(R.id.txtHeader);
         profileImage = findViewById(R.id.profileImage);
         textContinent = findViewById(R.id.textContinent);
+        txtSeeAll = findViewById(R.id.txtSeeAll);
+        inputSearch = findViewById(R.id.inputSearch);
+        searchRecycler = findViewById(R.id.searchRecycler);
+
+
+        allProductModelList = new ArrayList<>();
+        allProductAdapter = new AllProductAdapter(getApplicationContext(), allProductModelList);
+        searchRecycler.setLayoutManager(new GridLayoutManager(this,2));
+        searchRecycler.setAdapter(allProductAdapter);
+        searchRecycler.setHasFixedSize(true);
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    allProductModelList.clear();
+                    allProductAdapter.notifyDataSetChanged();
+                    txtHeader.setVisibility(View.VISIBLE);
+                    txtSeeAll.setVisibility(View.VISIBLE);
+                    productRecycler.setVisibility(View.VISIBLE);
+                }else{
+                    txtHeader.setVisibility(View.GONE);
+                    txtSeeAll.setVisibility(View.GONE);
+                    productRecycler.setVisibility(View.GONE);
+                    searchProduct(s.toString());
+                }
+
+            }
+        });
+
+
+
+
         setTopBar();
 
         productRecycler = findViewById(R.id.recyclerView);
@@ -228,6 +282,13 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        txtSeeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), AllProductActivity.class));
+            }
+        });
+
         // Bottom navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);
 
@@ -256,6 +317,29 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+    }
+
+    private void searchProduct(String type){
+        if(!type.isEmpty()){
+            db.collection("Product").document(type)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful() && task.getResult() != null){
+                                allProductModelList.clear();
+                                allProductAdapter.notifyDataSetChanged();
+                                DocumentSnapshot document = task.getResult();
+                                if(document.exists()) {
+                                    AllProductModel allProductModel = document.toObject(AllProductModel.class);
+                                    allProductModelList.add(allProductModel);
+                                    allProductAdapter.notifyDataSetChanged();
+                                }
+
+                            }
+                        }
+                    });
+        }
     }
 
     private void setTopBar() {
@@ -292,7 +376,7 @@ public class MainActivity extends AppCompatActivity{
 
         productModelList.clear();
 
-        db.collection("Product").whereGreaterThan("love", 5)
+        db.collection("Product").whereGreaterThan("love", 10)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

@@ -38,6 +38,7 @@ import com.jonathan.pam_tas.adapters.CartAdapter;
 import com.jonathan.pam_tas.models.CartModel;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,6 +138,15 @@ public class CartActivity extends AppCompatActivity {
         txtTotal.setVisibility(View.GONE);
         totalPrice.setVisibility(View.GONE);
         btnBuy.setVisibility(View.GONE);
+
+        btnBuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), OrderedActivity.class);
+                intent.putExtra("itemList", (Serializable) cartModelList);
+                startActivity(intent);
+            }
+        });
 
         // Bottom navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavBar);

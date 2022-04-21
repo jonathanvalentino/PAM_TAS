@@ -1,6 +1,8 @@
 package com.jonathan.pam_tas.models;
 
-public class CartModel {
+import java.io.Serializable;
+
+public class CartModel implements Serializable {
 
     String productName;
     String productPrice;

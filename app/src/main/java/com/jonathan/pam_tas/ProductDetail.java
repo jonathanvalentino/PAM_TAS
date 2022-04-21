@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.jonathan.pam_tas.models.AllProductModel;
 import com.jonathan.pam_tas.models.BookmarkModel;
 import com.jonathan.pam_tas.models.ProductModel;
 
@@ -44,6 +45,7 @@ public class ProductDetail extends AppCompatActivity {
     private EditText recipientName, personalLetter;
     ProductModel productModel = null;
     BookmarkModel bookmarkModel = null;
+    AllProductModel allProductModel = null;
     FirebaseFirestore db;
     String productId;
     FirebaseAuth auth;
@@ -77,6 +79,9 @@ public class ProductDetail extends AppCompatActivity {
         }
         else if(object instanceof BookmarkModel){
             bookmarkModel = (BookmarkModel) object;
+        }
+        else if(object instanceof AllProductModel){
+            allProductModel = (AllProductModel) object;
         }
 
         if(productModel != null){
@@ -218,10 +223,75 @@ public class ProductDetail extends AppCompatActivity {
 
             });
         }
+        else if(allProductModel != null){
+            Glide.with(getApplicationContext()).load(allProductModel.getImg_url()).into(detailImg);
+            name.setText(allProductModel.getName());
+            description.setText(allProductModel.getDescription());
+            sold.setText(allProductModel.getSold()+" sold");
+            price.setText("Rp "+allProductModel.getPrice());
+
+            db.collection("UserData").document(auth.getCurrentUser().getUid())
+                    .collection("Liked Product").document(allProductModel.getName())
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document != null) {
+                                    loves = document.getString("loved");
+                                    if(loves.equals("yes")){
+                                        love.setColorFilter(Color.argb(255, 235, 43, 84));
+                                    }
+                                    else {
+                                        love.clearColorFilter();
+                                    }
+                                } else {
+                                    Log.d("LOGGER", "No such document");
+                                }
+                            } else {
+                                Log.d("LOGGER", "get failed with ", task.getException());
+                            }
+                        }
+                    });
+
+            love.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
 
+                    if(love.getColorFilter()==null){
+                        love.setColorFilter(Color.argb(255, 235, 43, 84));
+
+                        Map<String, Object> lovedProduct = new HashMap<>();
+                        lovedProduct.put("loved", "yes");
+                        lovedProduct.put("description", allProductModel.getDescription());
+                        lovedProduct.put("img_url", allProductModel.getImg_url());
+                        lovedProduct.put("love", allProductModel.getLove());
+                        lovedProduct.put("name", allProductModel.getName());
+                        lovedProduct.put("price", allProductModel.getPrice());
+                        lovedProduct.put("sold", allProductModel.getSold());
+                        lovedProduct.put("type", allProductModel.getType());
 
 
+                        db.collection("Product").document(allProductModel.getName())
+                                .update("love", FieldValue.increment(1));
+                        db.collection("UserData").document(auth.getCurrentUser().getUid())
+                                .collection("Liked Product").document(allProductModel.getName())
+                                .set(lovedProduct);
+                    }
+                    else if(love.getColorFilter()!=null){
+                        love.clearColorFilter();
+                        db.collection("UserData").document(auth.getCurrentUser().getUid())
+                                .collection("Liked Product").document(allProductModel.getName())
+                                .update("loved","no");
+                        db.collection("Product").document(allProductModel.getName())
+                                .update("love", FieldValue.increment(-1));
+                    }
+                }
+
+            });
+        }
 
 
 
@@ -352,6 +422,45 @@ public class ProductDetail extends AppCompatActivity {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 docRef.update("price",FieldValue.increment(Integer.parseInt(bookmarkModel.getPrice())));
+                            } else {
+                                docRef.set(price);
+                            }
+                        }
+                    }
+                });
+
+                db.collection("CurrentUser").document(auth.getCurrentUser().getUid())
+                        .collection("AddToCart")
+                        .add(cartMap)
+                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                startActivity(new Intent(getApplicationContext(), CartActivity.class)
+                                        .putExtra("added",true));
+                            }
+                        });
+            }
+            else if(allProductModel!=null){
+                final HashMap<String, Object> cartMap = new HashMap<>();
+                cartMap.put("productName", allProductModel.getName());
+                cartMap.put("productPrice", price.getText().toString());
+                cartMap.put("currentTime", saveCurrentTime);
+                cartMap.put("currentDate", saveCurrentDate);
+                cartMap.put("recipient", recipientName.getText().toString());
+                cartMap.put("letter", personalLetter.getText().toString());
+                cartMap.put("img_url", allProductModel.getImg_url());
+
+                final HashMap<String, Object> price = new HashMap<>();
+                price.put("price", Integer.parseInt(allProductModel.getPrice()));
+
+                DocumentReference docRef = db.collection("CurrentUser").document(auth.getCurrentUser().getUid()).collection("CartTotalPrice").document("Total");
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                docRef.update("price",FieldValue.increment(Integer.parseInt(allProductModel.getPrice())));
                             } else {
                                 docRef.set(price);
                             }
